@@ -1,8 +1,113 @@
 import random
 import numpy as np
 
+def create_dataset(file_name):
+    """
+    Reads the dataset file and extracts the necessary information for the knapsack problem.
+
+    Args:
+        file_name (str): The name or path of the file containing the dataset.
+
+    Returns:
+        tuple: A tuple containing the following elements:
+            - items_data (list): A list of dictionaries, where each dictionary represents an item with its weight and value.
+            - max_capacity (int): The maximum capacity of the knapsack.
+            - item_count (int): The total number of items in the dataset.
+            - optimal_value (int): The optimal or best possible value that can be achieved for the given dataset.
+    """
+    weights = []
+    values = []
+    max_capacity = 0   # value of maximume weights
+    item_count = 0     # number of the items for each individual
+    optimal_value = 0  
+
+    # Read file and extract data file
+    full_path = os.path.abspath(__file__) # Get the full path of the script     
+    script_directory = os.path.dirname(full_path) # Get the directory of the script
+    data_file = os.path.join(script_directory,file_name) # Get the full path of the data file
+
+    with open(data_file,'r') as file: 
+        data = file.readlines()      
+
+        for idx, line in enumerate(data): # extract weights and vlues and store it into list
+            x = line.split()
+            if idx == 0:
+                max_capacity = int(x[1])
+                item_count = int(x[0])
+            else:
+                weights.append(int(x[1]))
+                values.append(int(x[0]))
+        
+        # Find the vlaue of optimal_value paramener. depend on value of (max_capacity) 
+        if max_capacity == 269: optimal_value = 295
+        elif max_capacity == 10000: optimal_value = 9767
+        else: optimal_value = 1514
+        
+        item_dict = {"weights":weights ,"values":values}
+    
+    return item_dict, max_capacity, item_count, optimal_value
+
+def initial_pop(population_size, num_items, seed_val):
+    """
+    Generate the initial population for the genetic algorithm.
+
+    Args:
+        population_size (int): The desired size of the initial population.
+        num_items (int): The number of items in the knapsack problem.
+
+    Returns:
+        list: A list of individuals, where each individual is a binary vector
+              representing a potential solution to the knapsack problem.
+              The length of each individual is equal to `num_items`.
+    """
+    random.seed(seed_val)
+    return [np.random.randint(2, size=num_items) for _ in range(population_size)]
+
+def calculate_fitness(individual, items, max_capicity):
+    """
+        This function calculates the fitness of an individual. 
+        The fitness is the total value of the items included in the knapsack.
+    """
+    total_weight = sum([items['weights'][i] * individual[i] for i in range(len(items['weights']))])
+    total_value = sum([items['values'][i] * individual[i] for i in range(len(items['values']))])
+    if total_weight > max_capicity:
+        return 0
+    else:
+        return total_value
+
 def main():
-    print()
+    # parameter setting 
+    population_size = 50   # Population size 
+    generations = 50   # number of generations to run the Genetic Algorithm
+    run_no = 5  # number of runs GA
+    # load data 
+    dataset_file = ['10_269','23_10000','100_995']  # 23_10000  10_269  100_995
+
+    for file in dataset_file:
+        print(f'DATASET NAME: {file}\n')
+        knapsack_items, max_capacity, num_items, optimal_value = create_dataset(file)  # Obtain dataset values into parameter
+    
+        # run GA for 5 times
+        best_values = []  # Store summation value of best individual each run 
+        best_individuals = []
+        best_fitnesses_runs = [] # Store best fitnesses in genereation for each run
+        
+        seed_value = [20, 40, 60, 80, 100]
+
+        for run in range(run_no):
+            print(f'Run {run+1} of {run_no}:')
+
+             # Reset best wights (during generation) list for each run
+            best_value_generation = []  # Store best wights in each generation for each run
+
+            # Initialize populations
+            populations = initial_pop(population_size, num_items, seed_value[run])
+
+            # Apply Selection process
+            for generation in range(generations):
+                print(f'\tGeneration {generation+1} of {generations} . . .')
+
+
 
 if __name__ == "__main__":
     main()
