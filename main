@@ -151,7 +151,7 @@ def main():
     # parameter setting 
     population_size = 50   # Population size 
     generations = 100   # number of generations to run the Genetic Algorithm
-    run_no = 5  # number of runs GA
+    run_no = 30  # number of runs GA
     # load data 
     dataset_file = ['23_10000','10_269','100_995']  # 23_10000  10_269  100_995
 
